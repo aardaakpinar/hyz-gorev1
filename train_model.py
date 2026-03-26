@@ -77,10 +77,10 @@ def train_custom_model():
     
     try:
         results = model.train(
-            data='data.yaml',           # Dataset konfigürasyonu
+            data='data/data.yaml',      # Dataset konfigürasyonu
             epochs=100,                 # Kaç kez döndürülsün
             imgsz=640,                  # Görüntü boyutu
-            device='0',               # GPU ID (0 = ilk GPU)
+            device='0',                 # GPU ID (0 = ilk GPU)
             batch=16,                   # Batch size (GPU belleğine göre)
             patience=20,                # Early stopping
             save=True,                  # Modeli kaydet
