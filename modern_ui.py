@@ -248,7 +248,7 @@ def video_thread_file(video_path):
         return
     
     total_frames = int(state.cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    max_frames = 500
+    max_frames = 300
     original_fps = state.cap.get(cv2.CAP_PROP_FPS)
     
     frame_times = deque(maxlen=30)
@@ -540,7 +540,6 @@ def index():
                 
                 # Viewport
                 with ui.card().classes(card_style + ' w-full flex-grow p-0 overflow-hidden relative flex items-center justify-center bg-black/40'):
-                    ui.label('VİZYON ÇIKTISI').classes('absolute top-4 left-4 z-10 text-[10px] font-bold text-white bg-primary/80 px-3 py-1 rounded-full uppercase tracking-tighter shadow-lg')
                     img_display = ui.image().classes('max-w-full max-h-full object-contain')
                     
                     with ui.column().classes('absolute inset-0 backdrop-blur-sm items-center justify-center z-20').bind_visibility_from(state, 'busy'):
