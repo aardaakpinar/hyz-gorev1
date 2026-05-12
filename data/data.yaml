@@ -2,12 +2,12 @@ train: ../train/images
 val: ../valid/images
 test: ../test/images
 
-nc: 6
-names: ['UAI', 'UAP', 'bus', 'car', 'person', 'truck']
+nc: 8
+names: ['bus', 'car', 'harvester', 'person', 'tractors', 'truck', 'uai', 'uap']
 
 roboflow:
   workspace: nars-workspace
-  project: tknfst-hyz
-  version: 3
+  project: thyz-pkczh
+  version: 2
   license: CC BY 4.0
-  url: https://universe.roboflow.com/nars-workspace/tknfst-hyz/dataset/3
+  url: https://universe.roboflow.com/nars-workspace/thyz-pkczh/dataset/2
