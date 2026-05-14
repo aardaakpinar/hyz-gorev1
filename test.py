@@ -1,5 +1,5 @@
 ﻿"""
-TEKNOFEST 2026 - YOLO TEST GUI
+TEKNOFEST 2026 - Model TEST GUI
 pip install nicegui ultralytics opencv-python torch torchvision
 """
 
@@ -69,7 +69,7 @@ def get_models():
         "yolo11s.pt",
     ]
 
-    custom_models = list(Path(".").glob("*.pt"))
+    custom_models = list(Path(".").rglob("*.pt"))
 
     for model in custom_models:
         models.append(str(model))
@@ -210,17 +210,55 @@ def process_video(video_path: str):
 
     if not cap.isOpened():
 
-        ui.notify("Video açılamadı", type="negative")
+        ui.notify(
+            "Video açılamadı",
+            type="negative"
+        )
         return
 
-    while state.video_running:
+    try:
 
-        success, frame = cap.read()
+        total_frames = int(
+            cap.get(cv2.CAP_PROP_FRAME_COUNT)
+        )
 
-        if not success:
-            break
+        fps = cap.get(cv2.CAP_PROP_FPS)
 
-        try:
+        print(f"TOTAL FRAME: {total_frames}")
+        print(f"FPS: {fps}")
+
+        # ==========================================
+        # MAX SAMPLE
+        # ==========================================
+
+        SAMPLE_COUNT = 200
+
+        # videodaki örnek frame noktaları
+        frame_indices = np.linspace(
+            0,
+            total_frames - 1,
+            SAMPLE_COUNT,
+            dtype=int
+        )
+
+        found_objects = {}
+
+        for idx in frame_indices:
+
+            if not state.video_running:
+                break
+
+            # direkt frame'e git
+            cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
+
+            success, frame = cap.read()
+
+            if not success:
+                continue
+
+            # ======================================
+            # YOLO
+            # ======================================
 
             results = state.model.predict(
                 frame,
@@ -232,9 +270,22 @@ def process_video(video_path: str):
 
             result = results[0]
 
-            state.detected_objects = extract_detections(
-                result
-            )
+            detections = extract_detections(result)
+
+            # ======================================
+            # UNIQUE OBJECTS
+            # ======================================
+
+            for item in detections:
+
+                label = item["label"]
+
+                if label not in found_objects:
+                    found_objects[label] = item
+
+            # ======================================
+            # PREVIEW
+            # ======================================
 
             annotated = result.plot()
 
@@ -247,14 +298,31 @@ def process_video(video_path: str):
                 buffer
             ).decode()
 
-        except Exception as e:
+            state.detected_objects = list(
+                found_objects.values()
+            )
 
-            print(e)
-            break
+        ui.notify(
+            f"""
+Video tarama tamamlandı
 
-    cap.release()
+Bulunan nesne:
+{len(found_objects)}
+            """,
+            type="positive"
+        )
 
-    state.video_running = False
+    except Exception as e:
+
+        ui.notify(
+            f"Video analiz hatası: {e}",
+            type="negative"
+        )
+
+    finally:
+
+        cap.release()
+        state.video_running = False
 
 
 # =========================================================
@@ -389,7 +457,7 @@ with ui.row().classes("w-full h-screen"):
     ):
 
         ui.label(
-            "YOLO TEST GUI"
+            "MODEL TEST GUI"
         ).classes(
             "text-2xl font-bold text-white"
         )
@@ -557,64 +625,6 @@ NESNE:
         )
 
         # =================================================
-        # DETECTED OBJECTS
-        # =================================================
-
-        with ui.card().classes(
-            "absolute top-4 right-4 "
-            "bg-[#111111dd] w-80"
-        ):
-
-            ui.label(
-                "TESPİT EDİLEN NESNELER"
-            ).classes(
-                "text-white font-bold"
-            )
-
-            detection_column = ui.column().classes(
-                "w-full"
-            )
-
-            def refresh_detections():
-
-                detection_column.clear()
-
-                if not state.detected_objects:
-
-                    with detection_column:
-
-                        ui.label(
-                            "Nesne bulunamadı"
-                        ).classes(
-                            "text-slate-400"
-                        )
-
-                    return
-
-                with detection_column:
-
-                    for item in state.detected_objects:
-
-                        with ui.row().classes(
-                            "w-full justify-between "
-                            "bg-[#1a1a1a] p-2 rounded"
-                        ):
-
-                            ui.label(
-                                item["label"]
-                            ).classes(
-                                "text-white"
-                            )
-
-                            ui.label(
-                                f"%{item['conf'] * 100:.1f}"
-                            ).classes(
-                                "text-green-400"
-                            )
-
-            ui.timer(0.2, refresh_detections)
-
-        # =================================================
         # UPDATE FRAME
         # =================================================
 
@@ -649,7 +659,7 @@ NESNE:
 # =========================================================
 
 ui.run(
-    title="YOLO Test GUI",
+    title="Model Test GUI",
     port=8080,
     dark=True,
     reload=False

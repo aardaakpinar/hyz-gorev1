@@ -231,9 +231,6 @@ def train_custom_model(
             save_period=10,
             pretrained=True,
             verbose=True,
-
-            project="runs/detect",
-
             name=f"custom_drone_"
                  f"{datetime.now().strftime('%Y%m%d_%H%M')}"
         )
