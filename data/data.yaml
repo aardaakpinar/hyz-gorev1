@@ -7,7 +7,7 @@ names: ['bus', 'car', 'harvester', 'person', 'tractors', 'truck', 'uai', 'uap']
 
 roboflow:
   workspace: nars-workspace
-  project: thyz-pkczh
-  version: 2
+  project: thyz-sm
+  version: 1
   license: CC BY 4.0
-  url: https://universe.roboflow.com/nars-workspace/thyz-pkczh/dataset/2
+  url: https://universe.roboflow.com/nars-workspace/thyz-sm/dataset/1
