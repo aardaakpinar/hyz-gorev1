@@ -21,3 +21,7 @@ This repository contains the dataset, training pipeline, validation utilities an
 * PyTorch
 * OpenCV
 * NiceGUI
+
+## Status
+
+This project was developed as an experimental baseline for TEKNOFEST 2026 HYZ Task 1. Current model performance is not yet sufficient for competition-level deployment and further dataset improvements and hyperparameter tuning are required.
